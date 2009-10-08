@@ -4293,7 +4293,7 @@
   (dpy :pointer)
   (ctx :pointer))
 
-(cffi:defcfun ("glXMakeCurrent" glXMakeCurrent) :pointer
+(cffi:defcfun ("glXMakeCurrent" glXMakeCurrent) :int
   (dpy :pointer)
   (drawable :pointer)
   (ctx :pointer))
