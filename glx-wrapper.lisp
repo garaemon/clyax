@@ -14,6 +14,10 @@
                       (display nil)
                       (screen nil)
                       (attribute nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (screen :screen #'null)
+                    (attribute :attribute #'null))
   (glXChooseVisual display
                    screen
                    attribute))
@@ -23,6 +27,9 @@
                        (visual-info nil)
                        (context (cffi:null-pointer))
                        (directp nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (visual-info :visual-info #'null))
   (glXCreateContext display
                     visual-info
                     context
@@ -32,6 +39,10 @@
                      (display nil)
                      (drawable nil)
                      (glx-context nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null)
+                    (glx-context :glx-context #'null))
   (glxMakeCurrent display drawable glx-context))
 
 (defun get-current-drawable ()
@@ -43,6 +54,9 @@
 (defun swap-buffers (&key
                      (display nil)
                      (drawable nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null))
   (glXSwapBuffers display drawable))
 
 (alexandria:define-constant +USE-GL+ GLX_USE_GL)
