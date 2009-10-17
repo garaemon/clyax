@@ -63,6 +63,14 @@
                      (format nil)
                      (type nil)
                      (data nil))
+  (check-args-error "You have to set"
+                    (internal-format :internal-format #'null)
+                    (width :width #'null)
+                    (height :height #'null)
+                    (border :border #'null)
+                    (format :format #'null)
+                    (type :type #'null)
+                    (data :type #'null))
   (glTexImage2d target
                 level
                 internal-format
