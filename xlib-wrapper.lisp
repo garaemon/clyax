@@ -215,9 +215,6 @@
                   attribute-mask
                   xattr)))
         ;; mask event...
-        (select-input :display display
-                      :drawable ret
-                      :mask event-mask)
         ret)))))
 
 (defun select-input (&key
