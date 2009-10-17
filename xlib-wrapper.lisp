@@ -297,6 +297,7 @@
                     (pixmap :pixmap #'null)
                     (size-hints :size-hints #'null))
   (XSetStandardProperties display
+                          window
                           window-name
                           icon-name
                           pixmap
