@@ -137,7 +137,7 @@
                           (depth nil)
                           (class nil)
                           (visual-info nil))
-  (chimi:check-args-error "You have to set "
+  (check-args-error "You have to set"
                           (display :display #'null)
                           (screen :screen #'null)
                           (class :class #'null)
@@ -151,6 +151,11 @@
                         (window nil)
                         (visual nil)    ;!!!!
                         (alloc nil))
+  (check-args-error "You have to set"
+                          (display :display #'null)
+                          (window :window #'null)
+                          (visual :visual #'null)
+                          (alloc :alloc #'null))
   (XCreateColormap display window visual alloc))
 
 (defun create-window (&key
@@ -169,6 +174,13 @@
                       (class +input-output+)
                       (border-width 2))
   ;; check arguments
+  (check-args-error "You have to set"
+                          (display :display #'null)
+                          (parent :parent #'null)
+                          (x :x #'null)
+                          (y :y #'null)
+                          (width :width #'null)
+                          (height :height #'null))
   (let ((vi (if visual-info
                 visual-info
                 (cffi:foreign-alloc 'XVisualInfo))))
@@ -212,6 +224,10 @@
                      (display nil)
                      (drawable nil)
                      (mask nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null)
+                    (mask :mask #'null))
   (XSelectInput display drawable mask))
                 
   
@@ -262,17 +278,25 @@
                          (display nil)
                          (window nil)
                          (size-hints nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (window :window #'null)
+                    (size-hints :size-hints #'null))
   (XSetNormalHints display window size-hints))
 
 (defun set-standard-properties (&key
                                 (display nil)
                                 (window nil)
-                                (window-name nil)
-                                (icon-name nil)
+                                (window-name "")
+                                (icon-name "")
                                 (pixmap nil)
                                 (size-hints nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (window :window #'null)
+                    (pixmap :pixmap #'null)
+                    (size-hints :size-hints #'null))
   (XSetStandardProperties display
-                          window
                           window-name
                           icon-name
                           pixmap
@@ -288,19 +312,32 @@
                      (width nil)
                      (height nil)
                      (exposurep t))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null)
+                    (x :x #'null)
+                    (y :y #'null)
+                    (width :width #'null)
+                    (height :height #'null))
   (XClearArea display drawable
               x y
               width height
-              exposurep))
+              (if exposurep 1 0)))
 
 (defun map-window (&key
                    (display nil)
                    (drawable nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null))
   (XMapWindow display drawable))
 
 (defun unmap-window (&key
                      (display nil)
                      (drawable nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null))
   (XUnmapWindow display drawable))
 
 (defun create-gc (&key
@@ -308,10 +345,11 @@
                   (drawable nil)
                   (value-mask 0)
                   (values (cffi:null-pointer)))
-  (XCreateGC display
-                  drawable
-                  value-mask
-                  values))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null))
+  (XCreateGC display drawable
+             value-mask values))
 
 (defun create-image (&key
                      (display nil)
@@ -324,6 +362,13 @@
                      (height nil)
                      (bitmap-pad nil)
                      (bytes-per-line nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (visual :visual #'null)
+                    (width :width #'null)
+                    (height :height #'null)
+                    (bitmap-pad :bitmap-pad #'null)
+                    (bytes-per-line :bytes-per-line #'null))
   (XCreateImage display visual
                 depth format offset
                 data width height
@@ -337,6 +382,15 @@
                   (src-x nil) (src-y nil)
                   (dest-x nil) (dest-y nil)
                   (width nil) (height nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null)
+                    (src-x :src-x #'null)
+                    (src-y :src-y #'null)
+                    (dest-x :dest-x #'null)
+                    (dest-y :dest-y #'null)
+                    (width :width #'null)
+                    (height :height #'null))
   (XPutImage display drawable gcontext
              image src-x src-y
              dest-x dest-y
@@ -346,11 +400,19 @@
                     (display nil)
                     (drawable nil)
                     (x nil) (y nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null)
+                    (x :x #'null)
+                    (y :y #'null))
   (XMoveWindow display drawable x y))
 
 (defun default-visual (&key
                        (display nil)
                        (screen nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (screen :screen #'null))
   (XDefaultVisual display screen))
 
 (defun free (obj)
@@ -453,31 +515,39 @@
   (XOpenDisplay host))
 
 (defun default-root-window (&key (display nil))
+  (check-args-error "You have to set"
+                    (display :display #'null))
   (XDefaultRootWindow display))
 
 (defun default-screen (&key (display nil))
+  (check-args-error "You have to set"
+                    (display :display #'null))
   (XDefaultScreen display))
 
 (defun sync (&key
              (display nil)
              (discardp nil))
+  (check-args-error "You have to set"
+                    (display :display #'null))
   (Xsync display (if discardp 1 0)))
 
 (defun flush (&key (display nil))
+  (check-args-error "You have to set"
+                    (display :display #'null))
   (XFlush display))
 
 (defun events-queued (&key (display nil) (mode 0))
+  (check-args-error "You have to set"
+                    (display :display #'null))
   (XEventsQueued display mode))
 
 (defun next-event (&key (display nil) (event nil))
-  (if (null display)
-      (error "You have to set :display"))
-  (if (null event)
-      (error "You have to set :event"))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (event :event #'null))
   (XNextEvent display event))
 
 ;; utils
-
 (alexandria:define-constant +x-event-types-alist+
     (list (cons +key-press+ 'XKeyEvent)
           (cons +key-release+ 'XKeyEvent)
@@ -594,4 +664,3 @@
                                        ',var)))
                       ,@(cddr clause)))))
             clauses)))))
-

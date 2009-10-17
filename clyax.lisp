@@ -5,7 +5,7 @@
 ;;================================================
 
 (defpackage :xlib
-  (:use #:common-lisp #:cffi  #:chimi)
+  (:use #:common-lisp #:cffi #:chimi)
   (:export
    #:create-window
    #:match-visual-info
