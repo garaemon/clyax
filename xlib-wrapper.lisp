@@ -119,17 +119,17 @@
 (alexandria:define-constant +generic-event+ GenericEvent)
 (alexandria:define-constant +last-event+ LASTEvent)
 
-(alexandria:define-constant +US-Position+ USPosition)
-(alexandria:define-constant +US-Size+ USSize)
-(alexandria:define-constant +P-Position+ PPosition)
-(alexandria:define-constant +P-Size+ PSize)
-(alexandria:define-constant +P-Min-Size+ PMinSize)
-(alexandria:define-constant +P-Max-Size+ PMaxSize)
-(alexandria:define-constant +P-Resize-Inc+ PResizeInc)
-(alexandria:define-constant +P-Aspect+ PAspect)
-(alexandria:define-constant +P-Base-Size+ PBaseSize)
-(alexandria:define-constant +P-Win-Gravity+ PWinGravity)
-(alexandria:define-constant +P-All-Hints+ PAllHints)
+(alexandria:define-constant +us-position+ USPosition)
+(alexandria:define-constant +us-size+ USSize)
+(alexandria:define-constant +p-position+ PPosition)
+(alexandria:define-constant +p-size+ PSize)
+(alexandria:define-constant +p-min-size+ PMinSize)
+(alexandria:define-constant +p-max-size+ PMaxSize)
+(alexandria:define-constant +p-resize-inc+ PResizeInc)
+(alexandria:define-constant +p-aspect+ PAspect)
+(alexandria:define-constant +p-base-size+ PBaseSize)
+(alexandria:define-constant +p-win-gravity+ PWinGravity)
+(alexandria:define-constant +p-all-hints+ PAllHints)
 
 (defun match-visual-info (&key
                           (display nil)
@@ -137,6 +137,11 @@
                           (depth nil)
                           (class nil)
                           (visual-info nil))
+  (chimi:check-args-error "You have to set "
+                          (display :display #'null)
+                          (screen :screen #'null)
+                          (class :class #'null)
+                          (visual-info :visual-info #'null))
   (XMatchVisualInfo display screen
                     depth class
                     visual-info))
@@ -147,34 +152,6 @@
                         (visual nil)    ;!!!!
                         (alloc nil))
   (XCreateColormap display window visual alloc))
-
-;; (defun create-window (&key
-;;                       (display nil)
-;;                       (parent nil)
-;; ;;                      (screen nil)
-;;                       (x nil)
-;;                       (y nil)
-;;                       (depth 24)
-;;                       (width nil) (height nil)
-;;                       (event-mask 0)
-;;                       (attribute-mask 0)
-;;                       (attribute nil)
-;; ;;                      (override-redirect 1)
-;;                       (visual nil)
-;;                       (class +input-output+)
-;;                       (border-width 2))
-;;     (let ((ret (XCreateWindow
-;;                   display
-;;                   parent
-;;                   x y                   ;x, y
-;;                   width height          ;width, height
-;;                   border-width
-;;                   depth
-;;                   class
-;;                   visual
-;;                   attribute-mask
-;;                   attribute)))
-;;       ret))
 
 (defun create-window (&key
                       (display nil)
@@ -220,16 +197,15 @@
                   x y                   ;x, y
                   width height          ;width, height
                   border-width
-                  ;;CopyFromParent ;depth
                   depth
                   class
                   vis
                   attribute-mask
                   xattr)))
         ;; mask event...
-;;;         (select-input :display display
-;;;                       :drawable ret
-;;;                       :mask event-mask)
+        (select-input :display display
+                      :drawable ret
+                      :mask event-mask)
         ret)))))
 
 (defun select-input (&key
