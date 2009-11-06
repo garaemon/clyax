@@ -469,7 +469,6 @@
                                        (cons colormap 'colormap)
                                        (cons cursor 'cursor)))
         (set-slot (car slot-val) (cdr slot-val)))
-      (sleep 1)
       obj)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -653,12 +652,14 @@
                   (let ((,ptr-var (foreign-slot-value
                                    ,xevent
                                    'XEvent
-                                   (event-constant->event-slot ,(car clause)))))
+                                   (event-constant->event-slot
+                                    ,(car clause)))))
                     (symbol-macrolet
                         ,(loop for var in (cadr clause)
                             collect `(,var
                                       (foreign-slot-value
-                                       ,ptr-var (event-constant->event-type ,(car clause))
+                                       ,ptr-var (event-constant->event-type
+                                                 ,(car clause))
                                        ',var)))
                       ,@(cddr clause)))))
             clauses)))))
