@@ -1,0 +1,2 @@
+# for clbuild my-projects
+clyax get_git git://github.com/garaemon/clyax.git
