@@ -2500,6 +2500,12 @@
   (arg2 :pointer)
   (arg3 :int))
 
+(cffi:defcfun ("XStoreName" XStoreName) :int
+  (arg0 :pointer)
+  (arg1 :pointer)
+  (arg2 :string))
+
+
 (cffi:defcfun ("XSync" XSync) :int
   (arg0 :pointer)
   (arg1 :int))

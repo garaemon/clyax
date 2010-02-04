@@ -9,6 +9,8 @@
   (:export
    #:create-window
    #:match-visual-info
+   #:store-name
+   #:set-window-background
    #:select-input
    #:create-size-hints
    #:set-normal-hints

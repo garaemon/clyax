@@ -206,8 +206,30 @@
                   depth
                   class vis attribute-mask xattr)))
         ;; setup background
-        (XSetWindowBackground display ret background-pixel)
+        (set-window-background :display display
+                               :drawable ret
+                               :color background-pixel)
         ret)))))
+
+(defun set-window-background (&key
+                              (display nil)
+                              (drawable nil)
+                              (color nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null)
+                    (color :color #'null))
+  (XSetWindowBackground display drawable color))
+
+(defun store-name (&key
+                   (display nil)
+                   (drawable nil)
+                   (title nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null)
+                    (title :title #'null))
+  (XStoreName display drawable title))
 
 (defun select-input (&key
                      (display nil)
