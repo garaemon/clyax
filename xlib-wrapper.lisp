@@ -68,7 +68,7 @@
 (alexandria:define-constant +z-pixmap+ ZPixmap)
 
 (alexandria:define-constant +none+ None)
-
+(alexandria:define-constant +copy-from-parent+ CopyFromParent)
 (alexandria:define-constant +alloc-none+ AllocNone)
 (alexandria:define-constant +alloc-all+ AllocAll)
 
@@ -138,10 +138,10 @@
                           (class nil)
                           (visual-info nil))
   (check-args-error "You have to set"
-                          (display :display #'null)
-                          (screen :screen #'null)
-                          (class :class #'null)
-                          (visual-info :visual-info #'null))
+                    (display :display #'null)
+                    (screen :screen #'null)
+                    (class :class #'null)
+                    (visual-info :visual-info #'null))
   (XMatchVisualInfo display screen
                     depth class
                     visual-info))
@@ -162,59 +162,51 @@
                       (display nil)
                       (parent nil)
                       (screen nil)
-                      (x nil)
-                      (y nil)
+                      (x nil) (y nil)
                       (depth 24)
                       (width nil) (height nil)
                       (event-mask 0)
                       (attribute-mask 0)
                       (attribute nil)
+                      (background-pixel nil)
                       (override-redirect 1)
                       (visual-info nil)
                       (class +input-output+)
                       (border-width 2))
   ;; check arguments
   (check-args-error "You have to set"
-                          (display :display #'null)
-                          (parent :parent #'null)
-                          (x :x #'null)
-                          (y :y #'null)
-                          (width :width #'null)
-                          (height :height #'null))
-  (let ((vi (if visual-info
-                visual-info
-                (cffi:foreign-alloc 'XVisualInfo))))
+                    (display :display #'null)
+                    (parent :parent #'null)
+                    (x :x #'null) (y :y #'null)
+                    (width :width #'null) (height :height #'null))
+  (let ((vi (if visual-info visual-info (cffi:foreign-alloc 'XVisualInfo))))
     ;; setup visual
+    ;; TODO: Error check
     (unless visual-info
-      (match-visual-info :display display
-                         :screen screen
-                         :depth depth
-                         :class +true-color+
+      (match-visual-info :display display :screen screen
+                         :depth depth :class +true-color+
                          :visual-info vi))
-    ;; VisualInfo -> Visual
-    (let* ((vis (visual-info-visual vi))
-           (colormap (unless attribute (create-colormap :display display
-                                                        :window parent
-                                                        :visual vis
-                                                        :alloc +alloc-none+))))
+    (let* ((vis (visual-info-visual vi)) ; VisualInfo -> Visual
+           (colormap (create-colormap :display display
+                                      :window parent
+                                      :visual vis
+                                      :alloc +alloc-none+)))
       (let ((xattr (if attribute
-                      attribute
-                      (create-set-window-attributes
-                       :event-mask event-mask
-                       :colormap colormap
-                       :override-redirect override-redirect))))
+                       attribute
+                       (create-set-window-attributes
+                        :event-mask event-mask
+                        :colormap colormap
+                        :background-pixel background-pixel
+                        :override-redirect override-redirect))))
       (let ((ret (XCreateWindow
-                  display
-                  parent
+                  display parent
                   x y                   ;x, y
                   width height          ;width, height
                   border-width
                   depth
-                  class
-                  vis
-                  attribute-mask
-                  xattr)))
-        ;; mask event...
+                  class vis attribute-mask xattr)))
+        ;; setup background
+        (XSetWindowBackground display ret background-pixel)
         ret)))))
 
 (defun select-input (&key
@@ -412,6 +404,14 @@
                     (display :display #'null)
                     (screen :screen #'null))
   (XDefaultVisual display screen))
+
+(defun default-colormap (&key
+                         (display nil)
+                         (screen nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (screen :screen #'null))
+  (XDefaultColormap display screen))
 
 (defun free (obj)
   (XFree obj))
