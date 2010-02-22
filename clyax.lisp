@@ -11,6 +11,7 @@
    #:create-simple-window
    #:match-visual-info
    #:store-name
+   #:get-geometry
    #:set-window-background
    #:set-background
    #:set-foreground
@@ -25,6 +26,7 @@
    #:unmap-window
    #:create-gc
    #:create-image
+   #:destroy-image
    #:put-image
    #:move-window
    #:resize-window

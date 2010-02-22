@@ -212,11 +212,22 @@
       (let ((ret (XCreateWindow
                   display parent x y width height border-width depth
                   class vis attribute-mask xattr)))
-        ;; setup background
-;;         (set-window-background :display display
-;;                                :drawable ret
-;;                                :color background-pixel)
         ret)))))
+
+(defun get-geometry (&key
+                     (display nil)
+                     (drawable nil))
+  (with-foreign-objects
+      ((dummy :unsigned-long)
+       (x :unsigned-int)
+       (y :unsigned-int)
+       (width :unsigned-int)
+       (height :unsigned-int))
+    (XGetGeometry display drawable dummy x y width height dummy dummy)
+    (values (mem-aref x :unsigned-int 0)
+            (mem-aref y :unsigned-int 0)
+            (mem-aref width :unsigned-int 0)
+            (mem-aref height :unsigned-int 0))))
 
 (defun set-window-background (&key
                               (display nil)
@@ -421,6 +432,9 @@
                 depth format offset
                 data width height
                 bitmap-pad bytes-per-line))
+
+(defun destroy-image (&key (image nil))
+  (XDestroyImage image))
 
 (defun put-image (&key
                   (display nil)

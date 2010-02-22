@@ -4088,3 +4088,6 @@
 
 (cffi:defcfun ("XOpenDisplay" XOpenDisplay) :pointer
   (arg0 :string))
+
+(cffi:defcfun ("XDestroyImage" XDestroyImage) :int
+  (arg0 :pointer))
