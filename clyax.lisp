@@ -8,9 +8,13 @@
   (:use #:common-lisp #:cffi #:chimi)
   (:export
    #:create-window
+   #:create-simple-window
    #:match-visual-info
    #:store-name
    #:set-window-background
+   #:set-background
+   #:set-foreground
+   #:set-fill-style
    #:select-input
    #:create-size-hints
    #:set-normal-hints
@@ -23,6 +27,7 @@
    #:create-image
    #:put-image
    #:move-window
+   #:resize-window
    #:default-visual
    #:create-set-window-attributes
    #:new-event
@@ -33,6 +38,7 @@
    #:events-queued
    #:next-event
    #:free
+   #:event-constant->event-key
    ;; xevent accessors
    #:EVENT-TYPE
    #:EVENT-XANY
@@ -203,12 +209,17 @@
    #:disable
    #:clear-color
    #:vertex-3f
+   #:vertex-3d
    #:translate-f
+   #:translate-d
    #:normal-3f
+   #:normal-3d
    #:begin
    #:end
    #:color-3f
+   #:color-3d
    #:tex-coord-2f
+   #:tex-coord-2d
    #:gen-textures
    #:gen-lists
    #:new-list
@@ -248,7 +259,7 @@
    #:+equal+
    #:+lequal+
    #:+greater+
-   #:+notequal+
+   #:+not-equal+
    #:+gequal+
    #:+always+
    #:+current-bit+
@@ -1207,15 +1218,22 @@
    #:disable-block
    #:enable-block
    #:clear-color-fv
+   #:clear-color-dv
    #:vertex-3fv
+   #:vertex-3dv
    #:translate-fv
+   #:translate-dv
    #:normal-3fv
+   #:normal-3dv
    #:command
    #:light-fv
    #:material-fv
    #:mult-matrix-f
+   #:mult-matrix-d
    #:color-3fv
+   #:color-3dv
    #:tex-coord-2fv
+   #:tex-coord-2dv
    #:new-texture-name
    #:display-list-block
    )
@@ -1247,6 +1265,7 @@
    #:+ACCUM-GREEN-SIZE+
    #:+ACCUM-BLUE-SIZE+
    #:+ACCUM-ALPHA-SIZE+
+   #:+multisample+
    )
   )
 

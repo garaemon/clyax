@@ -158,6 +158,18 @@
                           (alloc :alloc #'null))
   (XCreateColormap display window visual alloc))
 
+(defun create-simple-window (&key
+                             (display nil)
+                             (parent nil)
+                             (x 0) (y 0)
+                             (width nil) (height nil)
+                             (border-width 2)
+                             (background-pixel #x000000)
+                             (foreground-pixel #xFFFFFF))
+  (XCreateSimpleWindow display parent x y width height
+                       border-width foreground-pixel background-pixel))
+
+
 (defun create-window (&key
                       (display nil)
                       (parent nil)
@@ -186,29 +198,24 @@
       (match-visual-info :display display :screen screen
                          :depth depth :class +true-color+
                          :visual-info vi))
-    (let* ((vis (visual-info-visual vi)) ; VisualInfo -> Visual
-           (colormap (create-colormap :display display
-                                      :window parent
-                                      :visual vis
-                                      :alloc +alloc-none+)))
+    (let* ((vis (visual-info-visual vi))) ; VisualInfo -> Visual
       (let ((xattr (if attribute
                        attribute
                        (create-set-window-attributes
                         :event-mask event-mask
-                        :colormap colormap
+                        :colormap (create-colormap :display display
+                                                   :window parent
+                                                   :visual vis
+                                                   :alloc +alloc-none+)
                         :background-pixel background-pixel
                         :override-redirect override-redirect))))
       (let ((ret (XCreateWindow
-                  display parent
-                  x y                   ;x, y
-                  width height          ;width, height
-                  border-width
-                  depth
+                  display parent x y width height border-width depth
                   class vis attribute-mask xattr)))
         ;; setup background
-        (set-window-background :display display
-                               :drawable ret
-                               :color background-pixel)
+;;         (set-window-background :display display
+;;                                :drawable ret
+;;                                :color background-pixel)
         ret)))))
 
 (defun set-window-background (&key
@@ -220,6 +227,36 @@
                     (drawable :drawable #'null)
                     (color :color #'null))
   (XSetWindowBackground display drawable color))
+
+(defun set-background (&key
+                       (display nil)
+                       (gc nil)
+                       (color nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (gc :gc #'null)
+                    (color :color #'null))
+  (XSetBackground display gc color))
+
+(defun set-foreground (&key
+                       (display nil)
+                       (gc nil)
+                       (color nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (gc :gc #'null)
+                    (color :color #'null))
+  (XSetForeground display gc color))
+
+(defun set-fill-style (&key
+                       (display nil)
+                       (gc nil)
+                       (style nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (gc :gc #'null)
+                    (style :style #'null))
+  (XSetFillStyle display gc style))
 
 (defun store-name (&key
                    (display nil)
@@ -360,8 +397,7 @@
   (check-args-error "You have to set"
                     (display :display #'null)
                     (drawable :drawable #'null))
-  (XCreateGC display drawable
-             value-mask values))
+  (XCreateGC display drawable value-mask values))
 
 (defun create-image (&key
                      (display nil)
@@ -418,6 +454,18 @@
                     (x :x #'null)
                     (y :y #'null))
   (XMoveWindow display drawable x y))
+
+(defun resize-window (&key
+                      (display nil)
+                      (drawable nil)
+                      (width nil) (height nil))
+  (check-args-error "You have to set"
+                    (display :display #'null)
+                    (drawable :drawable #'null)
+                    (width :x #'null)
+                    (height :y #'null))
+  (XResizeWindow display drawable width height))
+
 
 (defun default-visual (&key
                        (display nil)
@@ -642,6 +690,48 @@
           (cons +generic-event+ 'xany)     ;???
           (cons  +last-event+ 'xany)) ;???
   :test #'equal)
+
+(alexandria:define-constant +x-event-symbol-alist+
+    (list
+     (cons +key-press+ :KeyPress)
+     (cons +key-release+ :KeyRelease)
+     (cons +button-press+ :ButtonPress)
+     (cons +button-release+ :ButtonRelease)
+     (cons +motion-notify+ :MotionNotify)
+     (cons +enter-notify+ :EnterNotify)
+     (cons +leave-notify+ :LeaveNotify)
+     (cons +focus-in+ :FocusIn)
+     (cons +focus-out+ :FocusOut)
+     (cons +keymap-notify+ :KeymapNotify)
+     (cons +expose+ :Expose)
+     (cons +graphics-expose+ :GraphicsExpose)
+     (cons +no-expose+ :NoExpose)
+     (cons +visibility-notify+ :VisibilityNotify)
+     (cons +create-notify+ :CreateNotify)
+     (cons +destroy-notify+ :DestroyNotify)
+     (cons +unmap-notify+ :UnmapNotify)
+     (cons +map-notify+ :MapNotify)
+     (cons +map-request+ :MapRequest)
+     (cons +reparent-notify+ :ReparentNotify)
+     (cons +configure-notify+ :ConfigureNotify)
+     (cons +configure-request+ :ConfigureRequest)
+     (cons +gravity-notify+ :GravityNotify)
+     (cons +resize-request+ :ResizeRequest)
+     (cons +circulate-notify+ :CirculateNotify)
+     (cons +circulate-request+ :CirculateRequest)
+     (cons +property-notify+ :PropertyNotify)
+     (cons +selection-clear+ :SelectionClear)
+     (cons +selection-request+ :SelectionRequest)
+     (cons +selection-notify+ :SelectionNotify)
+     (cons +colormap-notify+ :ColormapNotify)
+     (cons +client-message+ :ClientMessage)
+     (cons +mapping-notify+ :MappingNotify)
+     (cons +generic-event+ :GenericEvent)
+     (cons +last-event+ :LASTEvent))
+  :test #'equal)
+
+(defun event-constant->event-key (constant)
+  (cdr (assoc constant +x-event-symbol-alist+)))
 
 ;; internal method
 (defun event-constant->event-type (constant)

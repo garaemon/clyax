@@ -11,48 +11,84 @@
 
 (defun push-matrix ()
   (glPushMatrix))
+
 (defun pop-matrix ()
   (glPopMatrix))
+
 (defun push-attrib (bits)
   (glPushAttrib bits))
+
 (defun pop-attrib ()
   (glPopAttrib))
+
 (defun enable (op)
   (glEnable op))
+
 (defun disable (op)
   (glDisable op))
+
 (defun clear-color (a b c d)
   (glClearColor a b c d))
+
 (defun vertex-3f (a b c)
   (glVertex3f a b c))
+
+(defun vertex-3d (a b c)
+  (glVertex3d a b c))
+
 (defun translate-f (a b c)
   (glTranslatef a b c))
+
+(defun translate-d (a b c)
+  (glTranslated a b c))
+
 (defun normal-3f (a b c)
   (glNormal3f a b c))
+
+(defun normal-3d (a b c)
+  (glNormal3d a b c))
+
 (defun begin (op)
   (glBegin op))
+
 (defun end ()
   (glEnd))
+
 (defun color-3f (a b c)
   (glColor3f a b c))
+
+(defun color-3d (a b c)
+  (glColor3d a b c))
+
 (defun tex-coord-2f (a b)
   (glTexCoord2f a b))
+(defun tex-coord-2d (a b)
+  (glTexCoord2d a b))
+
 (defun gen-textures (num ret)
   (glGenTextures num ret))
+
 (defun gen-lists (num)
   (glGenLists num))
+
 (defun new-list (list op)
   (glNewList list op))
+
 (defun end-list ()
   (glEndList))
+
 (defun depth-mask (bool)
   (glDepthMask bool))
+
 (defun blend-func (a b)
   (glBlendFunc a b))
+
 (defun tex-parameter-i (a b c)
   (glTexParameteri a b c))
+
 (defun bind-texture (type name)
   (glBindTexture type name))
+
 (defun tex-image-2d (target
                      &key
                      (level 0)
@@ -80,31 +116,42 @@
                 format
                 type
                 data))
+
 (defun call-list (l)
   (glCallList l))
+
 (defun tex-env-i (a b c)
   (glTexEnvi a b c))
+
 (defun pixel-store-i (a b)
   (glPixelStorei a b))
+
 (defun front-face (a)
   (glFrontFace a))
+
 (defun cull-face (a)
   (glCullFace a))
+
 (defun shade-model (a)
   (glShadeModel a))
+
 (defun viewport (a b c d)
   (glViewport a b c d))
+
 (defun matrix-mode (a)
   (glMatrixMode a))
+
 (defun load-identity ()
   (glLoadIdentity))
+
 (defun flush ()
   (glFlush))
+
 (defun depth-func (func)
   (glDepthFunc func))
+
 (defun clear (mask)
   (glClear mask))
-  
 
 ;; constants
 (alexandria:define-constant +version-1-1+ GL_VERSION_1_1)
@@ -124,7 +171,7 @@
 (alexandria:define-constant +equal+ GL_EQUAL)
 (alexandria:define-constant +lequal+ GL_LEQUAL)
 (alexandria:define-constant +greater+ GL_GREATER)
-(alexandria:define-constant +notequal+ GL_NOTEQUAL)
+(alexandria:define-constant +not-equal+ GL_NOTEQUAL)
 (alexandria:define-constant +gequal+ GL_GEQUAL)
 (alexandria:define-constant +always+ GL_ALWAYS)
 (alexandria:define-constant +current-bit+ GL_CURRENT_BIT)
@@ -1078,6 +1125,7 @@
 (alexandria:define-constant +compressed-srgb-alpha+ GL_COMPRESSED_SRGB_ALPHA)
 (alexandria:define-constant +compressed-sluminance+ GL_COMPRESSED_SLUMINANCE)
 (alexandria:define-constant +compressed-sluminance-alpha+ GL_COMPRESSED_SLUMINANCE_ALPHA)
+(alexandria:define-constant +multisample+ GL_MULTISAMPLE)
 
 ;; utils
 (defmacro push-pop-matrix (&rest args)
@@ -1112,14 +1160,30 @@
 (defun clear-color-fv (v)
   (clear-color (elt v 0) (elt v 1) (elt v 2) (elt v 3)))
 
+(defun clear-color-dv (v)
+  (clear-color (coerce (elt v 0) 'single-float)
+               (coerce (elt v 1) 'single-float)
+               (coerce (elt v 2) 'single-float)
+               (coerce (elt v 3) 'single-float)))
+
+
 (defun vertex-3fv (v)
   (vertex-3f (elt v 0) (elt v 1) (elt v 2)))
+
+(defun vertex-3dv (v)
+  (vertex-3d (elt v 0) (elt v 1) (elt v 2)))
 
 (defun translate-fv (v)
   (translate-f (elt v 0) (elt v 1) (elt v 2)))
 
+(defun translate-dv (v)
+  (translate-d (elt v 0) (elt v 1) (elt v 2)))
+
 (defun normal-3fv (v)
   (normal-3f (elt v 0) (elt v 1) (elt v 2)))
+
+(defun normal-3dv (v)
+  (normal-3d (elt v 0) (elt v 1) (elt v 2)))
 
 (defmacro command (type &rest args)
   `(progn
@@ -1142,11 +1206,22 @@
       (vec v :float)
     (glMultMatrixf vec)))
 
+(defun mult-matrix-d (v)
+  (with-cl-sequence->cffi-array
+      (vec v :double)
+    (glMultMatrixd vec)))
+
 (defun color-3fv (v)
   (color-3f (elt v 0) (elt v 1) (elt v 2)))
 
+(defun color-3dv (v)
+  (color-3d (elt v 0) (elt v 1) (elt v 2)))
+
 (defun tex-coord-2fv (v)
   (tex-coord-2f (elt v 0) (elt v 1)))
+
+(defun tex-coord-2dv (v)
+  (tex-coord-2d (elt v 0) (elt v 1)))
 
 (defun new-texture-name ()
   (with-foreign-object
