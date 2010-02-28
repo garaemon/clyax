@@ -12,25 +12,18 @@
   (t "/usr/lib/libX11.so"))
 
 (in-package :gl)
-#+darwin
-(define-foreign-library _trap_gl
-    (:darwin "/System/Library/Frameworks/OpenGL.framework/Versions/A/OpenGL"))
 
 (define-foreign-library gl
-  (:darwin "/usr/X11/lib/libGL.dylib")
+    (:darwin
+     "/System/Library/Frameworks/OpenGL.framework/Libraries/libGL.dylib")
   (t "/usr/lib/libGL.so"))
 
 (in-package :glu)
 (define-foreign-library glu
-  (:darwin "/usr/X11/lib/libGLU.dylib")
+  (:darwin
+   "/System/Library/Frameworks/OpenGL.framework/Libraries/libGLU.dylib")
   (t "/usr/lib/libGLU.so"))
 
-
-#+darwin
-(progn
-  (in-package :gl)
-  (use-foreign-library _trap_gl)
-  )
 (in-package :xlib)
 (use-foreign-library X11)
 (in-package :gl)
